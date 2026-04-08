@@ -9,13 +9,14 @@ public static class DependencyInjectionExtension
 {
     public static void AddObsService(this IServiceCollection services, IConfiguration config)
     {
-       AddServices(services, config);
+       AddConnection(services, config);
     }
 
-    private static void AddServices(IServiceCollection services, IConfiguration config)
+    private static void AddConnection(IServiceCollection services, IConfiguration config)
     {
         services.Configure<OBSSettings>(config.GetSection("Settings:OBS"));
 
+        services.AddSingleton<ObsConnection>();
         services.AddSingleton<IObsService, OBSService>();
     }
 }

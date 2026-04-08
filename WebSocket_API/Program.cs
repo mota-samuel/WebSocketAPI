@@ -15,29 +15,11 @@ builder.Services.AddObsService(builder.Configuration);
 builder.Services.AddApplication();
 
 var app = builder.Build();
+app.MapControllers();
 
 string token = "123abc";
 
 var obs = new OBSWebsocket();
-
-void ConnectObs()
-{
-    try
-    {
-        if (!obs.IsConnected)
-        {
-            obs.Connect(url, password);
-            Console.WriteLine("Conectado ao OBS");
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Erro ao conectar no OBS: {ex.Message}");
-    }
-}
-
-// conecta ao iniciar
-ConnectObs();
 
 
 // 🌐 PAINEL WEB
@@ -106,15 +88,15 @@ async function updateStatus() {
 }
 
 function start() {
-    fetch('/start?t=' + token).then(updateStatus);
+    fetch('/obs/start?t=' + token).then(updateStatus);
 }
 
 function stop() {
-    fetch('/stop?t=' + token).then(updateStatus);
+    fetch('/obs/stop?t=' + token).then(updateStatus);
 }
 
 function scene(name) {
-    fetch('/scene?name=' + name + '&t=' + token);
+    fetch('/obs/scene?name=' + name + '&t=' + token);
 }
 
 setInterval(updateStatus, 2000);
@@ -127,82 +109,5 @@ updateStatus();
     context.Response.ContentType = "text/html; charset=utf-8";
     await context.Response.WriteAsync(html);
 });
-
-
-// 📊 STATUS
-app.MapGet("/status", () =>
-{
-    ConnectObs();
-
-    if (!obs.IsConnected)
-        return Results.Ok(new { connected = false });
-
-    var status = obs.GetRecordStatus();
-
-    return Results.Ok(new
-    {
-        connected = true,
-        recording = status.IsRecording
-    });
-});
-
-
-// 🎥 TROCAR CENA
-app.MapGet("/scene", (string name, string t) =>
-{
-    if (t != token) return Results.Unauthorized();
-
-    ConnectObs();
-
-    if (!obs.IsConnected)
-        return Results.Problem("OBS não conectado");
-
-    obs.SetCurrentProgramScene(name);
-
-    return Results.Ok($"Cena alterada: {name}");
-});
-
-
-// ▶ START
-app.MapGet("/start", (string t) =>
-{
-    if (t != token) return Results.Unauthorized();
-
-    ConnectObs();
-
-    if (!obs.IsConnected)
-        return Results.Problem("OBS não conectado");
-
-    var status = obs.GetRecordStatus();
-
-    if (status.IsRecording)
-        return Results.Ok("Já está gravando");
-
-    obs.StartRecord();
-
-    return Results.Ok("Gravação iniciada");
-});
-
-
-// ⏹ STOP
-app.MapGet("/stop", (string t) =>
-{
-    if (t != token) return Results.Unauthorized();
-
-    ConnectObs();
-
-    if (!obs.IsConnected)
-        return Results.Problem("OBS não conectado");
-
-    var status = obs.GetRecordStatus();
-
-    if (!status.IsRecording)
-        return Results.Ok("Já está parado");
-
-    obs.StopRecord();
-
-    return Results.Ok("Gravação parada");
-});
-
 
 app.Run();
