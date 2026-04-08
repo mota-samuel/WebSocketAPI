@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="obs-websocket-dotnet" Version="5.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\WebSocket_Application\WebSocket_Application.csproj" />
+    <ProjectReference Include="..\src\WebSocket_Communication\WebSocket_Communication.csproj" />
+    <ProjectReference Include="..\src\WebSocket_Exception\WebSocket_Exception.csproj" />
+    <ProjectReference Include="..\src\WebSocket_Infrastructure\WebSocket_Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>
