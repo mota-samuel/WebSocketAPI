@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using WebSocket_Application.Services;
 
 namespace WebSocket_Application;
 public static class DependencyInjectionExtension
@@ -11,5 +12,6 @@ public static class DependencyInjectionExtension
         private static void AddServices(IServiceCollection services)
         {
             services.AddScoped<UseCases.RecordingService>();
+            services.AddHostedService<StartupService>();
     }
 }
